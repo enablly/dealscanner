@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Dealflow — Deal Finder Dashboard (Mockup)</title>
+<style>
+  :root{
+    --bg:#f4f6fb; --card:#fff; --ink:#0f1b2d; --muted:#6b7a90; --line:#e6eaf2;
+    --brand:#3b5bfd; --brand-soft:#eef1ff; --green:#12a150; --green-soft:#e6f6ed;
+    --amber:#d98a00; --amber-soft:#fff4dc; --red:#d64545; --red-soft:#fdecec; --grey-soft:#f0f2f6;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);font-size:13px;width:1600px}
+  /* Top bar */
+  .top{height:60px;background:#0f1b2d;color:#fff;display:flex;align-items:center;padding:0 24px;gap:24px}
+  .logo{font-weight:800;font-size:19px;letter-spacing:-.3px;display:flex;align-items:center;gap:8px}
+  .logo i{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#5b7bff,#12c48b);display:inline-block}
+  .nav{display:flex;gap:4px}
+  .nav span{padding:7px 12px;border-radius:8px;color:#aab6cc;font-weight:500}
+  .nav span.on{background:#1f2e47;color:#fff}
+  .search{flex:1;max-width:460px;background:#1b2a42;border-radius:9px;padding:9px 14px;color:#8494ad}
+  .top .right{margin-left:auto;display:flex;align-items:center;gap:14px;color:#aab6cc}
+  .pill-toggle{display:flex;background:#1b2a42;border-radius:8px;padding:3px}
+  .pill-toggle b{padding:4px 10px;border-radius:6px;font-weight:600;font-size:12px}
+  .pill-toggle b.on{background:#fff;color:#0f1b2d}
+  .avatar{width:32px;height:32px;border-radius:50%;background:#5b7bff;color:#fff;display:grid;place-items:center;font-weight:700}
+  .bell{position:relative}
+  .bell em{position:absolute;top:-6px;right:-8px;background:#ff5a5a;color:#fff;font-style:normal;font-size:10px;border-radius:9px;padding:1px 5px;font-weight:700}
+
+  /* Buy box */
+  .buybox{margin:18px 24px 0;background:linear-gradient(90deg,#3b5bfd,#5a3bfd);border-radius:14px;color:#fff;padding:14px 18px;display:flex;align-items:center;gap:14px}
+  .buybox h3{font-size:14px;white-space:nowrap}
+  .buybox h3 small{display:block;font-weight:400;opacity:.8;font-size:11px;margin-top:2px}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;flex:1}
+  .chip{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.25);padding:6px 11px;border-radius:20px;font-weight:500;font-size:12px}
+  .chip b{opacity:.75;font-weight:500;margin-right:4px}
+  .btn{padding:8px 14px;border-radius:9px;font-weight:600;font-size:12px;white-space:nowrap}
+  .btn.white{background:#fff;color:var(--brand)}
+  .btn.ghost{border:1px solid rgba(255,255,255,.5);color:#fff}
+
+  .layout{display:grid;grid-template-columns:270px 1fr;gap:18px;padding:18px 24px 24px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px}
+
+  /* Sidebar */
+  .side{padding:16px}
+  .side h4{font-size:13px;display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+  .side h4 a{color:var(--brand);font-weight:500;font-size:12px}
+  .grp{border-top:1px solid var(--line);padding:13px 0}
+  .grp:first-of-type{border-top:none}
+  .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:700;margin-bottom:9px;display:flex;justify-content:space-between}
+  .cb{display:flex;align-items:center;gap:8px;padding:4px 0;color:#2b3a52}
+  .cb .box{width:15px;height:15px;border-radius:4px;border:1.5px solid #c3ccdb;flex:none}
+  .cb.on .box{background:var(--brand);border-color:var(--brand);position:relative}
+  .cb.on .box::after{content:"";position:absolute;left:4px;top:1px;width:4px;height:8px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+  .cb .n{margin-left:auto;color:var(--muted);font-size:12px}
+  .slider{height:6px;background:var(--line);border-radius:3px;position:relative;margin:14px 4px 8px}
+  .slider .fill{position:absolute;height:100%;background:var(--brand);border-radius:3px}
+  .slider .k{position:absolute;top:-5px;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--brand);margin-left:-8px}
+  .range{display:flex;justify-content:space-between;font-size:12px;color:#2b3a52;font-weight:600}
+  .seg{display:flex;background:var(--grey-soft);border-radius:8px;padding:3px;gap:3px}
+  .seg span{flex:1;text-align:center;padding:5px 0;border-radius:6px;font-size:12px;color:var(--muted);font-weight:500}
+  .seg span.on{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08);font-weight:600}
+  .tog{display:flex;align-items:center;justify-content:space-between;padding:5px 0;color:#2b3a52}
+  .sw{width:30px;height:17px;border-radius:9px;background:#cfd6e3;position:relative;flex:none}
+  .sw::after{content:"";position:absolute;width:13px;height:13px;border-radius:50%;background:#fff;top:2px;left:2px}
+  .sw.on{background:var(--green)}
+  .sw.on::after{left:15px}
+  .tags{display:flex;flex-wrap:wrap;gap:6px}
+  .tag{padding:4px 9px;border-radius:14px;background:var(--grey-soft);color:#3c4a60;font-size:11.5px;font-weight:500}
+  .tag.on{background:var(--brand-soft);color:var(--brand);font-weight:600}
+
+  /* Main */
+  .main{display:flex;flex-direction:column;gap:18px;min-width:0}
+  .kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+  .kpi{padding:14px 16px}
+  .kpi .t{color:var(--muted);font-size:12px;font-weight:500}
+  .kpi .v{font-size:24px;font-weight:800;letter-spacing:-.5px;margin-top:4px}
+  .kpi .s{font-size:11.5px;margin-top:3px;color:var(--muted)}
+  .up{color:var(--green);font-weight:600}
+  .row2{display:grid;grid-template-columns:1fr 380px;gap:18px}
+  .panel-h{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px}
+  .panel-h h2{font-size:15px}
+  .panel-h h2 small{font-weight:400;color:var(--muted);font-size:12px;margin-left:6px}
+  .sort{display:flex;gap:8px;align-items:center;color:var(--muted);font-size:12px}
+  .sort .dd{border:1px solid var(--line);padding:6px 10px;border-radius:8px;color:var(--ink);font-weight:600}
+  .viewt{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .viewt span{padding:6px 10px;font-weight:600;font-size:12px;color:var(--muted)}
+  .viewt span.on{background:var(--brand-soft);color:var(--brand)}
+
+  table{width:100%;border-collapse:collapse}
+  th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:700;padding:8px 10px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:#fafbfd}
+  td{padding:10px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+  tr.sel td{background:#f6f8ff}
+  tr.sel td:first-child{box-shadow:inset 3px 0 0 var(--brand)}
+  .num{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+  th.num{text-align:right}
+  .score{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:13px;position:relative}
+  .score.g{background:conic-gradient(var(--green) var(--p),#e3f2ea 0)}
+  .score.a{background:conic-gradient(var(--amber) var(--p),#fbeccc 0)}
+  .score.x{background:conic-gradient(#9aa6b8 var(--p),#e8ebf1 0)}
+  .score span{width:31px;height:31px;border-radius:50%;background:#fff;display:grid;place-items:center}
+  .dname{font-weight:700;font-size:13px;color:var(--ink)}
+  .dmeta{display:flex;gap:5px;margin-top:4px;flex-wrap:wrap}
+  .b{font-size:10.5px;padding:2px 7px;border-radius:10px;font-weight:600}
+  .b.g{background:var(--green-soft);color:var(--green)}
+  .b.a{background:var(--amber-soft);color:var(--amber)}
+  .b.r{background:var(--red-soft);color:var(--red)}
+  .b.n{background:var(--grey-soft);color:#56657c}
+  .b.bl{background:var(--brand-soft);color:var(--brand)}
+  .mult{display:inline-block;padding:3px 8px;border-radius:7px;font-weight:700;font-size:12px}
+  .mult.g{background:var(--green-soft);color:var(--green)}
+  .mult.a{background:var(--amber-soft);color:var(--amber)}
+  .mult.x{background:var(--grey-soft);color:var(--muted)}
+  .loc{color:#2b3a52}
+  .loc small{display:block;color:var(--muted);font-size:11px}
+  .src{color:var(--muted);font-size:12px}
+  .star{color:#c7cfdc;font-size:16px}
+  .star.on{color:#f5b301}
+  .sub{color:var(--muted);font-size:11px;font-weight:500}
+  .tablefoot{display:flex;justify-content:space-between;padding:11px 16px;color:var(--muted);font-size:12px}
+
+  /* Why popover */
+  .why{position:absolute;width:300px;background:#0f1b2d;color:#fff;border-radius:12px;padding:14px 16px;box-shadow:0 12px 30px rgba(15,27,45,.35);z-index:5}
+  .why h5{font-size:13px;margin-bottom:10px;display:flex;justify-content:space-between}
+  .why h5 b{color:#5ee59b}
+  .bar{display:grid;grid-template-columns:118px 1fr 34px;align-items:center;gap:8px;font-size:11.5px;margin:6px 0;color:#c8d2e3}
+  .bar .tr{height:6px;background:#26375a;border-radius:3px;overflow:hidden}
+  .bar .tr i{display:block;height:100%;background:#5ee59b;border-radius:3px}
+  .bar .tr i.am{background:#ffc34d}
+  .why p{font-size:11px;color:#9fb0c9;margin-top:10px;line-height:1.45}
+  .why::before{content:"";position:absolute;left:18px;top:-7px;width:14px;height:14px;background:#0f1b2d;transform:rotate(45deg)}
+
+  /* Right column */
+  .rcol{display:flex;flex-direction:column;gap:18px}
+  .chart{padding:0 14px 14px}
+  .legend{display:flex;gap:12px;font-size:11px;color:var(--muted);padding:0 2px 6px}
+  .legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;vertical-align:-1px}
+  .hb{display:grid;grid-template-columns:128px 1fr 40px;align-items:center;gap:8px;margin:7px 0;font-size:12px}
+  .hb .tr{height:9px;background:var(--grey-soft);border-radius:5px;overflow:hidden}
+  .hb .tr i{display:block;height:100%;border-radius:5px;background:var(--brand)}
+  .hb .m{text-align:right;font-weight:700;font-size:12px}
+  .geo{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .geo div{background:var(--grey-soft);border-radius:10px;padding:9px 11px}
+  .geo b{display:block;font-size:17px}
+  .geo span{font-size:11px;color:var(--muted)}
+  .geo div.on{background:var(--brand-soft);outline:1.5px solid var(--brand)}
+  .note{font-size:11px;color:var(--muted);padding:0 16px 14px;line-height:1.4}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="logo"><i></i>Dealflow</div>
+  <div class="nav"><span class="on">Deal Finder</span><span>Watchlist (6)</span><span>Compare</span><span>Sources</span><span>Market Insights</span></div>
+  <div class="search">🔍&nbsp; Search deals, e.g. “absentee vending” or “dental Florida”</div>
+  <div class="right">
+    <span style="font-size:12px">Updated 2 Nov 2026 · 367 listings · 16 sources</span>
+    <div class="pill-toggle"><b class="on">USD</b><b>MYR</b></div>
+    <span class="bell">🔔<em>12</em></span>
+    <div class="avatar">A</div>
+  </div>
+</div>
+
+<div class="buybox">
+  <h3>🎯 My Buy Box<small>Deals are scored against this profile</small></h3>
+  <div class="chips">
+    <span class="chip"><b>Budget</b>up to $500K</span>
+    <span class="chip"><b>Min profit</b>$75K / yr</span>
+    <span class="chip"><b>Max multiple</b>3.0×</span>
+    <span class="chip"><b>Countries</b>🇺🇸 US · 🇲🇾 Malaysia · 🌐 Online</span>
+    <span class="chip"><b>Industries</b>Services · Healthcare · E‑commerce / SaaS</span>
+    <span class="chip"><b>Style</b>Semi‑absentee OK</span>
+  </div>
+  <span class="btn ghost">🔔 Alert me on new matches</span>
+  <span class="btn white">Edit Buy Box</span>
+</div>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="card side">
+    <h4>Filters <a>Reset all</a></h4>
+
+    <div class="grp">
+      <div class="lbl">Country / Region</div>
+      <div class="cb on"><span class="box"></span>🇺🇸 United States<span class="n">172</span></div>
+      <div class="cb on"><span class="box"></span>🇲🇾 Malaysia<span class="n">84</span></div>
+      <div class="cb on"><span class="box"></span>🌐 Online / Remote<span class="n">74</span></div>
+      <div class="cb"><span class="box"></span>🇬🇧 United Kingdom<span class="n">14</span></div>
+      <div class="cb"><span class="box"></span>🇨🇦 Canada<span class="n">9</span></div>
+      <div class="cb"><span class="box"></span>🇦🇪 UAE<span class="n">6</span></div>
+      <div class="sub" style="margin-top:4px;color:var(--brand)">+ 24 more countries</div>
+    </div>
+
+    <div class="grp">
+      <div class="lbl">Industry</div>
+      <div class="cb on"><span class="box"></span>Home &amp; Field Services<span class="n">31</span></div>
+      <div class="cb on"><span class="box"></span>Healthcare &amp; Dental<span class="n">27</span></div>
+      <div class="cb on"><span class="box"></span>E‑commerce &amp; Amazon<span class="n">41</span></div>
+      <div class="cb on"><span class="box"></span>SaaS, Apps &amp; Content<span class="n">22</span></div>
+      <div class="cb"><span class="box"></span>Food &amp; Beverage<span class="n">58</span></div>
+      <div class="cb"><span class="box"></span>Retail &amp; Franchise<span class="n">29</span></div>
+      <div class="cb"><span class="box"></span>Construction &amp; Trades<span class="n">18</span></div>
+      <div class="sub" style="margin-top:4px;color:var(--brand)">+ 6 more industries</div>
+    </div>
+
+    <div class="grp">
+      <div class="lbl">Asking price <span style="text-transform:none;letter-spacing:0">USD</span></div>
+      <div class="slider"><div class="fill" style="left:0;width:46%"></div><div class="k" style="left:0"></div><div class="k" style="left:46%"></div></div>
+      <div class="range"><span>$0</span><span>$500K</span></div>
+    </div>
+
+    <div class="grp">
+      <div class="lbl">Price multiple (Ask ÷ Profit)</div>
+      <div class="seg"><span>Any</span><span>≤ 2×</span><span class="on">≤ 3×</span><span>≤ 5×</span></div>
+    </div>
+
+    <div class="grp">
+      <div class="lbl">Deal quality</div>
+      <div class="tog">Profit disclosed only <span class="sw on"></span></div>
+      <div class="tog">Hide “too good to be true” <span class="sw"></span></div>
+      <div class="tog">Seller financing available <span class="sw"></span></div>
+      <div class="tog">Owner retiring / motivated <span class="sw"></span></div>
+    </div>
+
+    <div class="grp">
+      <div class="lbl">Business model</div>
+      <div class="tags"><span class="tag on">Main Street</span><span class="tag on">Online</span><span class="tag on">SaaS</span><span class="tag">Takeover</span><span class="tag">Stake only</span><span class="tag">Franchise</span></div>
+    </div>
+
+    <div class="grp">
+      <div class="lbl">Listed</div>
+      <div class="seg"><span>24h</span><span class="on">7 days</span><span>30 days</span></div>
+    </div>
+
+    <div class="grp" style="padding-bottom:0">
+      <div class="lbl">Source</div>
+      <div class="tags"><span class="tag on">BizBuySell</span><span class="tag on">DealStream</span><span class="tag on">BizScout</span><span class="tag on">FE Intl</span><span class="tag on">Mudah.my</span><span class="tag">+11</span></div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <section class="main">
+    <div class="kpis">
+      <div class="card kpi"><div class="t">Deals matching your Buy Box</div><div class="v">38</div><div class="s"><span class="up">+9</span> new since last visit</div></div>
+      <div class="card kpi"><div class="t">Median multiple (matches)</div><div class="v">1.9×</div><div class="s">vs <b>3.6×</b> all listings</div></div>
+      <div class="card kpi"><div class="t">Median asking price</div><div class="v">$195K</div><div class="s">Range $40K – $495K</div></div>
+      <div class="card kpi"><div class="t">Median annual profit</div><div class="v">$118K</div><div class="s">Payback ≈ 1.9 yrs</div></div>
+      <div class="card kpi"><div class="t">Strong matches (score 80+)</div><div class="v" style="color:var(--green)">7</div><div class="s">3 in Healthcare</div></div>
+    </div>
+
+    <div class="row2">
+      <!-- TABLE -->
+      <div class="card" style="position:relative">
+        <div class="panel-h">
+          <h2>Ranked for you <small>38 deals · sorted by Deal Score</small></h2>
+          <div class="sort">Sort <span class="dd">Deal Score ▾</span>
+            <div class="viewt"><span class="on">☰ List</span><span>▦ Cards</span><span>🗺 Map</span></div>
+          </div>
+        </div>
+        <table>
+          <thead><tr><th style="width:60px">Score</th><th>Deal</th><th>Location</th><th class="num">Asking</th><th class="num">Profit / yr</th><th class="num">Multiple</th><th>Source</th><th></th></tr></thead>
+          <tbody>
+            <tr class="sel">
+              <td><div class="score g" style="--p:94%"><span>94</span></div></td>
+              <td><div class="dname">Elite Dryer Vent Cleaners</div>
+                <div class="dmeta"><span class="b bl">Home Services</span><span class="b g">Low multiple</span><span class="b n">Home‑based</span></div></td>
+              <td class="loc">🇺🇸 Greensboro, NC<small>United States</small></td>
+              <td class="num">$95K</td><td class="num">$202K</td>
+              <td class="num"><span class="mult g">0.47×</span></td>
+              <td class="src">BizBuySell</td><td><span class="star on">★</span></td>
+            </tr>
+            <tr>
+              <td><div class="score g" style="--p:91%"><span>91</span></div></td>
+              <td><div class="dname">High‑Tech Vending Machines (AI, cashless)</div>
+                <div class="dmeta"><span class="b bl">Vending</span><span class="b g">Semi‑absentee</span><span class="b n">Est. 2015</span></div></td>
+              <td class="loc">🇺🇸 Charlotte, NC<small>United States</small></td>
+              <td class="num">$139K</td><td class="num">$175K</td>
+              <td class="num"><span class="mult g">0.79×</span></td>
+              <td class="src">BizBuySell</td><td><span class="star">★</span></td>
+            </tr>
+            <tr>
+              <td><div class="score g" style="--p:89%"><span>89</span></div></td>
+              <td><div class="dname">Bikes &amp; Segway Tours and Rental</div>
+                <div class="dmeta"><span class="b bl">Leisure</span><span class="b a">Owners retiring</span><span class="b n">Est. 2020</span></div></td>
+              <td class="loc">🇺🇸 Miami Beach, FL<small>United States</small></td>
+              <td class="num">$149K</td><td class="num">$213K</td>
+              <td class="num"><span class="mult g">0.70×</span></td>
+              <td class="src">BizBuySell</td><td><span class="star on">★</span></td>
+            </tr>
+            <tr>
+              <td><div class="score g" style="--p:87%"><span>87</span></div></td>
+              <td><div class="dname">Chiropractic &amp; Rehab Practice</div>
+                <div class="dmeta"><span class="b bl">Healthcare</span><span class="b g">54% margin</span></div></td>
+              <td class="loc">🇺🇸 Broward County, FL<small>United States</small></td>
+              <td class="num">$85K</td><td class="num">$109K</td>
+              <td class="num"><span class="mult g">0.78×</span></td>
+              <td class="src">DealStream</td><td><span class="star">★</span></td>
+            </tr>
+            <tr>
+              <td><div class="score g" style="--p:84%"><span>84</span></div></td>
+              <td><div class="dname">Concierge Medicine Practice</div>
+                <div class="dmeta"><span class="b bl">Healthcare</span><span class="b g">79% margin</span><span class="b n">Recurring</span></div></td>
+              <td class="loc">🇺🇸 Riviera Beach, FL<small>United States</small></td>
+              <td class="num">$395K</td><td class="num">$305K</td>
+              <td class="num"><span class="mult g">1.29×</span></td>
+              <td class="src">DealStream</td><td><span class="star">★</span></td>
+            </tr>
+            <tr>
+              <td><div class="score g" style="--p:81%"><span>81</span></div></td>
+              <td><div class="dname">AI Content Intelligence Platform</div>
+                <div class="dmeta"><span class="b bl">SaaS</span><span class="b g">Remote</span><span class="b a">Young (2024)</span></div></td>
+              <td class="loc">🌐 Online<small>Seller in PA, US</small></td>
+              <td class="num">$120K</td><td class="num">$93K</td>
+              <td class="num"><span class="mult g">1.30×</span></td>
+              <td class="src">BizBuySell</td><td><span class="star">★</span></td>
+            </tr>
+            <tr>
+              <td><div class="score a" style="--p:72%"><span>72</span></div></td>
+              <td><div class="dname">Shopify Store — UK (US market)</div>
+                <div class="dmeta"><span class="b bl">E‑commerce</span><span class="b r">⚠ Verify: 0.28× unusually low</span></div></td>
+              <td class="loc">🌐 Online<small>Seller in UK</small></td>
+              <td class="num">$40K</td><td class="num">$145K</td>
+              <td class="num"><span class="mult g">0.28×</span></td>
+              <td class="src">DealStream</td><td><span class="star">★</span></td>
+            </tr>
+            <tr>
+              <td><div class="score x" style="--p:58%"><span>58</span></div></td>
+              <td><div class="dname">Turnkey Halal Kopitiam — USJ</div>
+                <div class="dmeta"><span class="b bl">Food &amp; Bev</span><span class="b n">Profit not disclosed · low confidence</span></div></td>
+              <td class="loc">🇲🇾 Subang Jaya, Selangor<small>Malaysia</small></td>
+              <td class="num">$18K<div class="sub">RM 80,000</div></td><td class="num" style="color:var(--muted)">—</td>
+              <td class="num"><span class="mult x">n/a</span></td>
+              <td class="src">Mudah.my</td><td><span class="star">★</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="tablefoot"><span>Showing 8 of 38 · Prices converted to USD (native currency shown on hover)</span><span style="color:var(--brand);font-weight:600">☐ Select to compare (max 4) &nbsp;·&nbsp; Export CSV</span></div>
+
+        <!-- Why this score popover -->
+        
+      </div>
+
+      <!-- RIGHT COLUMN -->
+      <div class="rcol">
+        <div class="card">
+          <div class="panel-h"><h2>Value Map <small>Ask vs annual profit</small></h2></div>
+          <div class="chart">
+            <div class="legend"><span><i style="background:var(--green)"></i>In Buy Box</span><span><i style="background:#c3ccdb"></i>Other listings</span><span><i style="background:var(--green-soft);border-radius:2px;border:1px dashed var(--green)"></i>≤ 3× value zone</span></div>
+            <svg width="350" height="230" viewBox="0 0 350 230" font-family="-apple-system,Inter,sans-serif" font-size="10">
+              <!-- axes area 40..340 x, 10..195 y ; x=profit 0..400K, y=ask 0..1.2M -->
+              <polygon points="40,195 340,195 340,10 128,10" fill="#e6f6ed" opacity=".9"/>
+              <line x1="40" y1="195" x2="128" y2="10" stroke="#12a150" stroke-dasharray="4 3" stroke-width="1.3"/>
+              <text x="132" y="22" fill="#12a150" font-weight="700">3× line</text>
+              <text x="250" y="60" fill="#12a150" font-weight="700" opacity=".8">GOOD VALUE ↘</text>
+              <g stroke="#eef1f6"><line x1="40" y1="149" x2="340" y2="149"/><line x1="40" y1="102" x2="340" y2="102"/><line x1="40" y1="56" x2="340" y2="56"/><line x1="40" y1="10" x2="340" y2="10"/></g>
+              <line x1="40" y1="195" x2="340" y2="195" stroke="#c3ccdb"/><line x1="40" y1="10" x2="40" y2="195" stroke="#c3ccdb"/>
+              <g fill="#8a97ab"><text x="34" y="198" text-anchor="end">0</text><text x="34" y="152" text-anchor="end">300K</text><text x="34" y="105" text-anchor="end">600K</text><text x="34" y="59" text-anchor="end">900K</text><text x="34" y="14" text-anchor="end">1.2M</text>
+              <text x="115" y="210" text-anchor="middle">100K</text><text x="190" y="210" text-anchor="middle">200K</text><text x="265" y="210" text-anchor="middle">300K</text><text x="340" y="210" text-anchor="end">400K</text>
+              <text x="190" y="226" text-anchor="middle" fill="#6b7a90">Annual profit (USD)</text></g>
+              <!-- other listings -->
+              <g fill="#c3ccdb">
+                <circle cx="74" cy="80" r="4"/><circle cx="96" cy="60" r="4"/><circle cx="110" cy="120" r="4"/><circle cx="83" cy="140" r="4"/><circle cx="160" cy="40" r="4"/><circle cx="140" cy="95" r="4"/><circle cx="60" cy="160" r="4"/><circle cx="210" cy="70" r="4"/><circle cx="250" cy="30" r="4"/><circle cx="120" cy="150" r="4"/><circle cx="90" cy="170" r="4"/><circle cx="185" cy="130" r="4"/><circle cx="300" cy="50" r="4"/><circle cx="70" cy="110" r="4"/><circle cx="230" cy="110" r="4"/><circle cx="150" cy="168" r="4"/><circle cx="58" cy="128" r="4"/><circle cx="270" cy="85" r="4"/>
+              </g>
+              <!-- buy box matches -->
+              <g fill="#12a150" stroke="#fff" stroke-width="1.5">
+                <circle cx="191" cy="180" r="5.5"/><circle cx="171" cy="174" r="5.5"/><circle cx="200" cy="172" r="5.5"/><circle cx="122" cy="182" r="5.5"/><circle cx="269" cy="134" r="5.5"/><circle cx="110" cy="176" r="5.5"/><circle cx="149" cy="189" r="5.5"/><circle cx="142" cy="164" r="5.5"/><circle cx="95" cy="166" r="5.5"/><circle cx="216" cy="158" r="5.5"/>
+              </g>
+              <circle cx="191" cy="180" r="9" fill="none" stroke="#3b5bfd" stroke-width="2"/>
+              <text x="203" y="190" fill="#3b5bfd" font-weight="700">Elite Dryer Vent</text>
+            </svg>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="panel-h"><h2>Best value by industry <small>median multiple</small></h2></div>
+          <div style="padding:0 16px 12px">
+            <div class="hb"><span>Home &amp; Field Services</span><div class="tr"><i style="width:38%;background:var(--green)"></i></div><span class="m" style="color:var(--green)">2.1×</span></div>
+            <div class="hb"><span>Healthcare &amp; Dental</span><div class="tr"><i style="width:47%;background:var(--green)"></i></div><span class="m" style="color:var(--green)">2.6×</span></div>
+            <div class="hb"><span>E‑commerce &amp; Amazon</span><div class="tr"><i style="width:53%;background:var(--amber)"></i></div><span class="m" style="color:var(--amber)">2.9×</span></div>
+            <div class="hb"><span>Food &amp; Beverage</span><div class="tr"><i style="width:60%;background:var(--amber)"></i></div><span class="m" style="color:var(--amber)">3.3×</span></div>
+            <div class="hb"><span>SaaS, Apps &amp; Content</span><div class="tr"><i style="width:73%;background:var(--red)"></i></div><span class="m" style="color:var(--red)">4.0×</span></div>
+          </div>
+          <div class="note">Lower multiple = you pay fewer years of profit to buy the business.</div>
+        </div>
+
+        <div class="card">
+          <div class="panel-h"><h2>Where the deals are</h2></div>
+          <div class="geo" style="padding:0 16px 16px">
+            <div class="on"><b>🇺🇸 172</b><span>United States · med. $310K</span></div>
+            <div class="on"><b>🇲🇾 84</b><span>Malaysia · med. RM 90K</span></div>
+            <div class="on"><b>🌐 74</b><span>Online · med. $650K</span></div>
+            <div><b>🌍 37</b><span>Rest of world</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Why-this-score popover anchored to first row -->
+<div class="why" style="left:322px;top:484px">
+  <h5>Why 94 / 100? <b>Strong match</b></h5>
+  <div class="bar"><span>Value (multiple)</span><div class="tr"><i style="width:98%"></i></div><span>34/35</span></div>
+  <div class="bar"><span>Buy Box fit</span><div class="tr"><i style="width:100%"></i></div><span>25/25</span></div>
+  <div class="bar"><span>Profitability</span><div class="tr"><i style="width:85%"></i></div><span>17/20</span></div>
+  <div class="bar"><span>Data completeness</span><div class="tr"><i class="am" style="width:70%"></i></div><span>7/10</span></div>
+  <div class="bar"><span>Track record</span><div class="tr"><i class="am" style="width:60%"></i></div><span>6/10</span></div>
+  <p>Paying 0.47× profit vs 2.1× median for Home Services. Revenue &amp; year established not disclosed — ask the broker.</p>
+</div>
+
+</body>
+</html>

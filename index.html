@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Dealflow — Deal Desk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- TOP APP BAR -->
+    <header class="app-topbar">
+      <div class="topbar-left">
+        <div class="logo">
+          <span class="logo-mark"></span>
+          <span class="logo-text">Dealflow</span>
+          <span class="logo-badge">DESK</span>
+        </div>
+        <nav class="desktop-nav desktop-only">
+          <button class="nav-tab active" data-tab="inbox">Inbox <span class="badge" id="inbox-count">0</span></button>
+          <button class="nav-tab" data-tab="pipeline">Pipeline <span class="badge gray" id="pipeline-count">0</span></button>
+          <button class="nav-tab" data-tab="triage">Fast Triage</button>
+          <button class="nav-tab" data-tab="buyers">Buyers CRM</button>
+        </nav>
+      </div>
+
+      <div class="topbar-center desktop-only">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="desktop-search" placeholder="Search deals, keywords, location, notes (Press '/' to focus)...">
+          <span class="kbd-hint">/</span>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <div class="currency-toggle" id="currency-toggle" title="Switch default display currency">
+          <button class="cur-btn active" data-cur="USD">USD</button>
+          <button class="cur-btn" data-cur="MYR">MYR</button>
+        </div>
+        <button class="icon-btn-header desktop-only" id="btn-export-csv" title="Export current list to CSV">📥</button>
+        <div class="user-avatar" title="Current scout: Sarah (KL Desk)">S</div>
+      </div>
+    </header>
+
+    <!-- MOBILE SUBHEADER SEARCH -->
+    <div class="mobile-search-bar mobile-only">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="mobile-search" placeholder="Search 370+ deals, locations, blurbs...">
+    </div>
+
+    <!-- PIPELINE KPI STRIP -->
+    <section class="kpi-strip">
+      <div class="kpi-item active" data-kpi="all">
+        <span class="kpi-label">To Screen</span>
+        <span class="kpi-val text-brand" id="kpi-to-screen">0</span>
+        <span class="kpi-sub" id="kpi-to-screen-sub">New batch</span>
+      </div>
+      <div class="kpi-item" data-kpi="pipeline-fee">
+        <span class="kpi-label">Pipeline Fee</span>
+        <span class="kpi-val text-green" id="kpi-pipeline-fee">$0</span>
+        <span class="kpi-sub" id="kpi-pipeline-fee-sub">Shortlisted + active</span>
+      </div>
+      <div class="kpi-item" data-kpi="shortlisted">
+        <span class="kpi-label">Shortlisted</span>
+        <span class="kpi-val text-purple" id="kpi-shortlisted">0</span>
+        <span class="kpi-sub">Ready to outreach</span>
+      </div>
+      <div class="kpi-item" data-kpi="contacted">
+        <span class="kpi-label">Contacted</span>
+        <span class="kpi-val" id="kpi-contacted">0</span>
+        <span class="kpi-sub">In negotiation</span>
+      </div>
+      <div class="kpi-item desktop-only" data-kpi="mandates">
+        <span class="kpi-label">Mandates</span>
+        <span class="kpi-val text-green" id="kpi-mandates">0</span>
+        <span class="kpi-sub">Exclusive signed</span>
+      </div>
+      <div class="kpi-item desktop-only" data-kpi="closed">
+        <span class="kpi-label">Closed</span>
+        <span class="kpi-val" id="kpi-closed">0</span>
+        <span class="kpi-sub">Won this month</span>
+      </div>
+    </section>
+
+    <!-- QUICK PRESET CHIPS STRIP -->
+    <section class="chips-strip" id="chips-strip">
+      <button class="chip active" data-view="all">All Deals <span class="chip-n" id="chip-all-count">0</span></button>
+      <button class="chip" data-view="owner">🔥 Direct Owner <span class="chip-n" id="chip-owner-count">0</span></button>
+      <button class="chip" data-view="malaysia">🇲🇾 Malaysia <span class="chip-n" id="chip-my-count">0</span></button>
+      <button class="chip" data-view="us">🇺🇸 United States <span class="chip-n" id="chip-us-count">0</span></button>
+      <button class="chip" data-view="high-fee">💰 Fee &gt; $20K</button>
+      <button class="chip" data-view="motivated">⏳ Motivated (Retiring/Urgent)</button>
+      <button class="chip" data-view="missing-pl">🧾 Needs P&amp;L</button>
+      <button class="chip btn-filter-toggle" id="btn-toggle-filters">⚙️ Filters <span class="active-dot hidden" id="filter-active-dot"></span></button>
+    </section>
+
+    <!-- MAIN TWO-COLUMN / THREE-COLUMN WORKSPACE -->
+    <main class="main-workspace">
+      <!-- DESKTOP SIDEBAR FILTER DRAWER -->
+      <aside class="sidebar-filters desktop-only" id="sidebar-filters">
+        <div class="sidebar-header">
+          <h3>Screening Filters</h3>
+          <button class="text-link" id="btn-reset-filters">Reset All</button>
+        </div>
+
+        <div class="filter-group">
+          <label class="group-title">Seller Representation</label>
+          <div class="check-options">
+            <label class="check-item"><input type="checkbox" name="rep" value="owner" checked> <span>Owner Direct (No Broker)</span></label>
+            <label class="check-item"><input type="checkbox" name="rep" value="broker" checked> <span>Broker Represented</span></label>
+            <label class="check-item"><input type="checkbox" name="rep" value="unknown" checked> <span>Unclassified</span></label>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <label class="group-title">Target Region</label>
+          <div class="check-options" id="country-filters">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <label class="group-title">Industry Sector</label>
+          <div class="check-options" id="industry-filters">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <label class="group-title">Est. Fee Tier</label>
+          <div class="segmented-control" id="fee-tier-filter">
+            <button class="seg-btn active" data-fee="any">Any</button>
+            <button class="seg-btn" data-fee="10k">&gt;$10K</button>
+            <button class="seg-btn" data-fee="25k">&gt;$25K</button>
+            <button class="seg-btn" data-fee="100k">&gt;$100K</button>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <label class="group-title">Seller Signals</label>
+          <div class="tag-cloud" id="signal-filters">
+            <span class="tag-toggle" data-sig="Retiring">Retiring</span>
+            <span class="tag-toggle" data-sig="Relocating">Relocating</span>
+            <span class="tag-toggle" data-sig="Motivated">Motivated</span>
+            <span class="tag-toggle" data-sig="Seller financing">Seller Financing</span>
+            <span class="tag-toggle" data-sig="Absentee">Absentee</span>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <label class="group-title">Data Completeness</label>
+          <div class="toggle-row">
+            <span>Profit disclosed only</span>
+            <label class="switch"><input type="checkbox" id="toggle-profit-only"><span class="slider"></span></label>
+          </div>
+          <div class="toggle-row">
+            <span>Hide potential duplicates</span>
+            <label class="switch"><input type="checkbox" id="toggle-hide-dups" checked><span class="slider"></span></label>
+          </div>
+        </div>
+      </aside>
+
+      <!-- PRIMARY CONTENT PANE: INBOX FEED -->
+      <section class="content-pane" id="pane-inbox">
+        <div class="pane-header">
+          <div class="pane-title-area">
+            <h2 id="list-title">All Deals</h2>
+            <span class="count-pill" id="showing-count">Showing 0</span>
+          </div>
+          <div class="pane-actions">
+            <span class="keyboard-shortcuts desktop-only">
+              <span class="kbd">S</span> Shortlist
+              <span class="kbd">X</span> Pass
+              <span class="kbd">↑↓</span> Navigate
+            </span>
+            <div class="sort-select-wrapper">
+              <label for="sort-by">Sort:</label>
+              <select id="sort-by">
+                <option value="opp-desc">⚡ Opportunity Score (High to Low)</option>
+                <option value="fee-desc">💰 Estimated Fee (Highest)</option>
+                <option value="ask-desc">Asking Price (High to Low)</option>
+                <option value="ask-asc">Asking Price (Low to High)</option>
+                <option value="mult-asc">Multiple (Lowest / Value)</option>
+                <option value="date-desc">Newest Scanned</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- LIST CONTAINER -->
+        <div class="deal-list" id="deal-list">
+          <!-- Deal cards dynamically injected here -->
+        </div>
+
+        <div class="empty-state hidden" id="empty-state">
+          <div class="empty-icon">🔍</div>
+          <h3>No matching deals found</h3>
+          <p>Try adjusting your filters or resetting to view all listings.</p>
+          <button class="btn btn-primary" id="btn-empty-reset">Reset Filters</button>
+        </div>
+      </section>
+
+      <!-- SECONDARY PANE: FAST TRIAGE MODE -->
+      <section class="content-pane hidden" id="pane-triage">
+        <div class="triage-view-container">
+          <div class="triage-header">
+            <div>
+              <h2>⚡ 1-Thumb Rapid Triage</h2>
+              <p>Quickly screen through unreviewed deals. Use keyboard or buttons.</p>
+            </div>
+            <div class="triage-progress">
+              <span id="triage-counter">Card 1 of 0</span>
+              <div class="triage-bar"><div class="triage-bar-fill" id="triage-bar-fill"></div></div>
+            </div>
+          </div>
+
+          <div class="triage-card-stage" id="triage-card-stage">
+            <!-- Active triage card rendered here -->
+          </div>
+
+          <div class="triage-controls">
+            <button class="triage-btn pass" id="btn-triage-pass" title="Pass (X)">
+              <span class="btn-icon">✕</span>
+              <span class="btn-label">Pass</span>
+            </button>
+            <button class="triage-btn note" id="btn-triage-details" title="View full details (Space)">
+              <span class="btn-icon">📋</span>
+              <span class="btn-label">Details</span>
+            </button>
+            <button class="triage-btn shortlist" id="btn-triage-shortlist" title="Shortlist (S)">
+              <span class="btn-icon">✓</span>
+              <span class="btn-label">Shortlist</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECONDARY PANE: PIPELINE KANBAN VIEW -->
+      <section class="content-pane hidden" id="pane-pipeline">
+        <div class="pipeline-kanban" id="pipeline-kanban">
+          <div class="kanban-col" data-stage="shortlisted">
+            <div class="col-header">
+              <h3>⭐ Shortlisted <span class="col-count" id="count-stage-shortlisted">0</span></h3>
+              <span class="col-fee" id="fee-stage-shortlisted">$0</span>
+            </div>
+            <div class="col-cards" id="cards-stage-shortlisted"></div>
+          </div>
+          <div class="kanban-col" data-stage="contacted">
+            <div class="col-header">
+              <h3>📞 Contacted <span class="col-count" id="count-stage-contacted">0</span></h3>
+              <span class="col-fee" id="fee-stage-contacted">$0</span>
+            </div>
+            <div class="col-cards" id="cards-stage-contacted"></div>
+          </div>
+          <div class="kanban-col" data-stage="mandate">
+            <div class="col-header">
+              <h3>📜 Mandate Signed <span class="col-count" id="count-stage-mandate">0</span></h3>
+              <span class="col-fee" id="fee-stage-mandate">$0</span>
+            </div>
+            <div class="col-cards" id="cards-stage-mandate"></div>
+          </div>
+          <div class="kanban-col" data-stage="matched">
+            <div class="col-header">
+              <h3>🎯 Buyer Matched <span class="col-count" id="count-stage-matched">0</span></h3>
+              <span class="col-fee" id="fee-stage-matched">$0</span>
+            </div>
+            <div class="col-cards" id="cards-stage-matched"></div>
+          </div>
+          <div class="kanban-col" data-stage="closed">
+            <div class="col-header">
+              <h3>🏆 Closed Won <span class="col-count" id="count-stage-closed">0</span></h3>
+              <span class="col-fee" id="fee-stage-closed">$0</span>
+            </div>
+            <div class="col-cards" id="cards-stage-closed"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECONDARY PANE: BUYERS CRM DIRECTORY -->
+      <section class="content-pane hidden" id="pane-buyers">
+        <div class="buyers-view-container">
+          <div class="buyers-header">
+            <div>
+              <h2>👥 Active Registered Buyers</h2>
+              <p>Pre-vetted buyers and acquisition criteria for instant matching.</p>
+            </div>
+            <button class="btn btn-primary" id="btn-add-buyer">+ Add Buyer Profile</button>
+          </div>
+          <div class="buyers-grid" id="buyers-grid">
+            <!-- Buyers injected dynamically -->
+          </div>
+        </div>
+      </section>
+
+      <!-- DETAIL DRAWER (SLIDE-OVER ON DESKTOP, BOTTOM-SHEET ON MOBILE) -->
+      <aside class="detail-drawer" id="detail-drawer">
+        <div class="drawer-drag-handle mobile-only"></div>
+        <div class="drawer-header">
+          <div class="drawer-header-info">
+            <span class="badge" id="drawer-source-badge">Source</span>
+            <span class="drawer-scandate" id="drawer-scandate">Date</span>
+          </div>
+          <button class="btn-close" id="btn-close-drawer" title="Close (Esc)">✕</button>
+        </div>
+
+        <div class="drawer-body" id="drawer-body">
+          <div class="drawer-top-section">
+            <div class="drawer-score-badge" id="drawer-score-badge">
+              <span class="score-val" id="drawer-score-val">88</span>
+              <span class="score-lbl">Opp. Score</span>
+            </div>
+            <div class="drawer-title-area">
+              <h2 id="drawer-title">Listing Name</h2>
+              <div class="drawer-loc" id="drawer-loc">Location</div>
+            </div>
+          </div>
+
+          <div class="drawer-pills" id="drawer-pills"></div>
+
+          <!-- FINANCIAL SNAPSHOT -->
+          <div class="drawer-financials-grid">
+            <div class="dfin-card">
+              <span class="dfin-lbl">Asking Price</span>
+              <span class="dfin-val" id="drawer-ask-nat">RM 700K</span>
+              <span class="dfin-sub" id="drawer-ask-usd">$154,000 USD</span>
+            </div>
+            <div class="dfin-card">
+              <span class="dfin-lbl">Annual Profit / SDE</span>
+              <span class="dfin-val" id="drawer-profit-nat">—</span>
+              <span class="dfin-sub" id="drawer-profit-usd">Profit not stated</span>
+            </div>
+            <div class="dfin-card">
+              <span class="dfin-lbl">Valuation Multiple</span>
+              <span class="dfin-val" id="drawer-mult">—</span>
+              <span class="dfin-sub" id="drawer-mult-sub">Benchmark: 2.8×</span>
+            </div>
+            <div class="dfin-card highlight">
+              <span class="dfin-lbl">Est. Broker Fee</span>
+              <span class="dfin-val text-green" id="drawer-fee">$15,400</span>
+              <span class="dfin-sub" id="drawer-fee-sub">Based on 10% rate</span>
+            </div>
+          </div>
+
+          <!-- OPPORTUNITY SCORE BREAKDOWN -->
+          <div class="drawer-section">
+            <h4 class="section-title">Opportunity Score Breakdown</h4>
+            <div class="score-bars" id="drawer-score-bars">
+              <!-- Score bars injected -->
+            </div>
+          </div>
+
+          <!-- BLURB & EXTRACTED SIGNALS -->
+          <div class="drawer-section">
+            <h4 class="section-title">Listing Text &amp; Extracted Signals</h4>
+            <div class="blurb-quote" id="drawer-blurb">
+              Listing description...
+            </div>
+            <a href="#" target="_blank" rel="noopener noreferrer" class="link-original" id="drawer-original-link">
+              Open Original Listing Source ↗
+            </a>
+          </div>
+
+          <!-- MATCHING CRM BUYERS -->
+          <div class="drawer-section">
+            <h4 class="section-title">Matching CRM Buyers (<span id="drawer-buyer-count">0</span>)</h4>
+            <div class="matched-buyers-list" id="drawer-matched-buyers">
+              <!-- Matched buyers injected -->
+            </div>
+          </div>
+
+          <!-- 1-TAP BROKER OUTREACH PITCH -->
+          <div class="drawer-section outreach-section">
+            <div class="section-header-row">
+              <h4 class="section-title">⚡ 1-Tap Broker Outreach Pitch</h4>
+              <button class="btn-copy-pitch" id="btn-copy-pitch">📋 Copy Pitch</button>
+            </div>
+            <textarea class="pitch-box" id="drawer-pitch-text" rows="3" readonly></textarea>
+            <div class="outreach-actions-row">
+              <button class="btn-outreach wa" id="btn-outreach-wa">💬 WhatsApp Pitch</button>
+              <button class="btn-outreach mail" id="btn-outreach-mail">✉️ Email / Contact</button>
+            </div>
+          </div>
+
+          <!-- ASSIGNMENT & STATUS ACTIONS -->
+          <div class="drawer-section lead-actions-section">
+            <div class="assignment-row">
+              <label for="drawer-assignee">Assignee:</label>
+              <select id="drawer-assignee">
+                <option value="Sarah">Sarah (KL Desk)</option>
+                <option value="Arden">Arden (Founder)</option>
+                <option value="Jason">Jason (US Desk)</option>
+                <option value="Unassigned">Unassigned</option>
+              </select>
+              <label for="drawer-stage">Stage:</label>
+              <select id="drawer-stage">
+                <option value="unscreened">To Screen</option>
+                <option value="shortlisted">⭐ Shortlisted</option>
+                <option value="contacted">📞 Contacted</option>
+                <option value="mandate">📜 Mandate Signed</option>
+                <option value="matched">🎯 Buyer Matched</option>
+                <option value="closed">🏆 Closed Won</option>
+                <option value="passed">✕ Passed</option>
+              </select>
+            </div>
+            <div class="action-buttons-group">
+              <button class="btn btn-shortlist" id="btn-drawer-shortlist">✓ Shortlist Deal</button>
+              <button class="btn btn-pass" id="btn-drawer-pass">✕ Pass Deal</button>
+            </div>
+          </div>
+
+          <!-- INTERNAL NOTES -->
+          <div class="drawer-section">
+            <h4 class="section-title">Scout &amp; Broker Notes</h4>
+            <textarea class="notes-input" id="drawer-notes" placeholder="Add confidential notes on seller, phone calls, lease details..."></textarea>
+            <div class="notes-save-status" id="drawer-notes-status">Auto-saved to local state</div>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- MOBILE BOTTOM NAVIGATION BAR -->
+    <nav class="mobile-bottom-bar mobile-only">
+      <button class="m-nav-item active" data-tab="inbox">
+        <span class="m-icon">📥</span>
+        <span class="m-label">Inbox</span>
+        <span class="m-badge" id="m-badge-inbox">0</span>
+      </button>
+      <button class="m-nav-item" data-tab="triage">
+        <span class="m-icon">⚡</span>
+        <span class="m-label">Triage</span>
+      </button>
+      <button class="m-nav-item" data-tab="pipeline">
+        <span class="m-icon">📊</span>
+        <span class="m-label">Pipeline</span>
+      </button>
+      <button class="m-nav-item" data-tab="buyers">
+        <span class="m-icon">👥</span>
+        <span class="m-label">Buyers</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- SCRIPTS -->
+  <script src="data/listings.js"></script>
+  <script src="app.js"></script>
+
+
+</body>
+</html>
